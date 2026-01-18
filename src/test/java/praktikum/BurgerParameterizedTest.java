@@ -22,40 +22,40 @@ public class BurgerParameterizedTest {
     private Bun mockBun;
 
     @Mock
-    private Ingredient mockIngredient1;
+    private Ingredient mockSauce;
 
     @Mock
-    private Ingredient mockIngredient2;
+    private Ingredient mockFilling;
 
     private final String bunName;
     private final float bunPrice;
-    private final IngredientType ingredientType1;
-    private final String ingredientName1;
-    private final float ingredientPrice1;
-    private final IngredientType ingredientType2;
-    private final String ingredientName2;
-    private final float ingredientPrice2;
+    private final IngredientType sauceType;
+    private final String sauceName;
+    private final float saucePrice;
+    private final IngredientType fillingType;
+    private final String fillingName;
+    private final float fillingPrice;
     private final float expectedTotalPrice;
 
     public BurgerParameterizedTest(
             String bunName,
             float bunPrice,
-            IngredientType ingredientType1,
-            String ingredientName1,
-            float ingredientPrice1,
-            IngredientType ingredientType2,
-            String ingredientName2,
-            float ingredientPrice2,
+            IngredientType sauceType,
+            String sauceName,
+            float saucePrice,
+            IngredientType fillingType,
+            String fillingName,
+            float fillingPrice,
             float expectedTotalPrice) {
 
         this.bunName = bunName;
         this.bunPrice = bunPrice;
-        this.ingredientType1 = ingredientType1;
-        this.ingredientName1 = ingredientName1;
-        this.ingredientPrice1 = ingredientPrice1;
-        this.ingredientType2 = ingredientType2;
-        this.ingredientName2 = ingredientName2;
-        this.ingredientPrice2 = ingredientPrice2;
+        this.sauceType = sauceType;
+        this.sauceName = sauceName;
+        this.saucePrice = saucePrice;
+        this.fillingType = fillingType;
+        this.fillingName = fillingName;
+        this.fillingPrice = fillingPrice;
         this.expectedTotalPrice = expectedTotalPrice;
     }
 
@@ -66,12 +66,12 @@ public class BurgerParameterizedTest {
 
         when(mockBun.getName()).thenReturn(bunName);
         when(mockBun.getPrice()).thenReturn(bunPrice);
-        when(mockIngredient1.getType()).thenReturn(ingredientType1);
-        when(mockIngredient1.getName()).thenReturn(ingredientName1);
-        when(mockIngredient1.getPrice()).thenReturn(ingredientPrice1);
-        when(mockIngredient2.getType()).thenReturn(ingredientType2);
-        when(mockIngredient2.getName()).thenReturn(ingredientName2);
-        when(mockIngredient2.getPrice()).thenReturn(ingredientPrice2);
+        when(mockSauce.getType()).thenReturn(sauceType);
+        when(mockSauce.getName()).thenReturn(sauceName);
+        when(mockSauce.getPrice()).thenReturn(saucePrice);
+        when(mockFilling.getType()).thenReturn(fillingType);
+        when(mockFilling.getName()).thenReturn(fillingName);
+        when(mockFilling.getPrice()).thenReturn(fillingPrice);
     }
 
     @Parameterized.Parameters(name = "Тест {index}: {0} + {2} {3} + {5} {6} = {8}")
@@ -102,8 +102,8 @@ public class BurgerParameterizedTest {
     @Test
     public void getPriceParameterizedTest() {
         burger.setBuns(mockBun);
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(burger.getPrice())
@@ -118,8 +118,8 @@ public class BurgerParameterizedTest {
     @Test
     public void getReceiptContentParameterizedTest() {
         burger.setBuns(mockBun);
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         String receipt = burger.getReceipt();
 
@@ -128,17 +128,17 @@ public class BurgerParameterizedTest {
                 .as("Чек должен содержать название булочки: " + bunName)
                 .contains(bunName);
         softAssertions.assertThat(receipt)
-                .as("Чек должен содержать тип первого ингредиента в нижнем регистре")
-                .contains(ingredientType1.toString().toLowerCase());
+                .as("Чек должен содержать тип соуса в нижнем регистре")
+                .contains(sauceType.toString().toLowerCase());
         softAssertions.assertThat(receipt)
-                .as("Чек должен содержать название первого ингредиента")
-                .contains(ingredientName1);
+                .as("Чек должен содержать название соуса")
+                .contains(sauceName);
         softAssertions.assertThat(receipt)
-                .as("Чек должен содержать тип второго ингредиента в нижнем регистре")
-                .contains(ingredientType2.toString().toLowerCase());
+                .as("Чек должен содержать тип начинки в нижнем регистре")
+                .contains(fillingType.toString().toLowerCase());
         softAssertions.assertThat(receipt)
-                .as("Чек должен содержать название второго ингредиента")
-                .contains(ingredientName2);
+                .as("Чек должен содержать название начинки")
+                .contains(fillingName);
         softAssertions.assertThat(receipt)
                 .as("Чек должен содержать общую цену")
                 .contains("Price:");
@@ -148,8 +148,8 @@ public class BurgerParameterizedTest {
     @Test
     public void receiptFormatAndStructureParameterizedTest() {
         burger.setBuns(mockBun);
-        burger.addIngredient(mockIngredient1);
-        burger.addIngredient(mockIngredient2);
+        burger.addIngredient(mockSauce);
+        burger.addIngredient(mockFilling);
 
         String receipt = burger.getReceipt();
 
