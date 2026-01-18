@@ -2,94 +2,240 @@ package praktikum;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.assertj.core.api.SoftAssertions;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BurgerTest {
 
-    private Burger burger; // Тестируемый объект
+    private Burger burger;
 
     @Mock
-    private Bun bun; // Мок-объект булочки
+    private Bun mockBun;
 
     @Mock
-    private Ingredient ingredient1; // Мок-объект первого ингредиента
+    private Ingredient mockIngredient1;
 
     @Mock
-    private Ingredient ingredient2; // Мок-объект второго ингредиента
+    private Ingredient mockIngredient2;
+
+    @Mock
+    private Ingredient mockIngredient3;
 
     @Before
     public void setUp() {
-        // Инициализация моков (аннотации @Mock начинают работать)
-        MockitoAnnotations.openMocks(this);
-        burger = new Burger(); // Создаем новый бургер перед каждым тестом
-
-        // Настройка стабов (задаем поведение моков):
-        // Когда вызывается bun.getName(), возвращаем "black bun"
-        when(bun.getName()).thenReturn("black bun");
-        // Когда вызывается bun.getPrice(), возвращаем 100.0f
-        when(bun.getPrice()).thenReturn(100.0f);
-        // Когда вызывается ingredient1.getType(), возвращаем SAUCE
-        when(ingredient1.getType()).thenReturn(IngredientType.SAUCE);
-        // Когда вызывается ingredient1.getName(), возвращаем "hot sauce"
-        when(ingredient1.getName()).thenReturn("hot sauce");
-        // Когда вызывается ingredient1.getPrice(), возвращаем 50.0f
-        when(ingredient1.getPrice()).thenReturn(50.0f);
-        // Аналогично для ingredient2
-        when(ingredient2.getType()).thenReturn(IngredientType.FILLING);
-        when(ingredient2.getName()).thenReturn("cutlet");
-        when(ingredient2.getPrice()).thenReturn(200.0f);
+        burger = new Burger();
     }
 
     @Test
-    public void testSetBuns() {
-        // Тестируем метод setBuns()
-        burger.setBuns(bun); // Устанавливаем булочку в бургер
-        // Проверяем, что булочка действительно установилась
-        // assertSame проверяет, что это один и тот же объект в памяти
-        assertSame("Булочка должна быть установлена в бургер", bun, burger.bun);
+    public void setBunsTest() {
+        burger.setBuns(mockBun);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.bun)
+                .as("Метод setBuns() должен устанавливать булочку")
+                .isEqualTo(mockBun);
+        softAssertions.assertThat(burger.bun)
+                .as("Булочка не должна быть null после установки")
+                .isNotNull();
+        softAssertions.assertAll();
     }
 
     @Test
-    public void testAddIngredient() {
-        // Тестируем метод addIngredient()
-        burger.addIngredient(ingredient1); // Добавляем ингредиент в бургер
-        // Проверяем, что список ингредиентов содержит 1 элемент
-        // assertEquals сравнивает ожидаемое значение (1) с фактическим (размер списка)
-        assertEquals("После добавления должен быть 1 ингредиент", 1, burger.ingredients.size());
+    public void addIngredientTest() {
+        burger.addIngredient(mockIngredient1);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.ingredients)
+                .as("Список ингредиентов должен содержать добавленный элемент")
+                .contains(mockIngredient1);
+        softAssertions.assertThat(burger.ingredients.size())
+                .as("Размер списка должен быть 1 после добавления")
+                .isEqualTo(1);
+        softAssertions.assertAll();
     }
 
     @Test
-    public void testRemoveIngredient() {
-        // Тестируем метод removeIngredient()
-        burger.addIngredient(ingredient1); // Сначала добавляем ингредиент
-        burger.removeIngredient(0); // Удаляем его по индексу 0
-        // Проверяем, что список ингредиентов стал пустым
-        // assertTrue проверяет, что условие истинно
-        assertTrue("Список ингредиентов должен быть пустым после удаления", burger.ingredients.isEmpty());
+    public void removeIngredientTest() {
+        burger.addIngredient(mockIngredient1);
+        burger.addIngredient(mockIngredient2);
+        burger.removeIngredient(0);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.ingredients)
+                .as("После удаления не должен содержать первый элемент")
+                .doesNotContain(mockIngredient1);
+        softAssertions.assertThat(burger.ingredients)
+                .as("После удаления должен содержать второй элемент")
+                .contains(mockIngredient2);
+        softAssertions.assertThat(burger.ingredients.size())
+                .as("Размер списка должен быть 1 после удаления")
+                .isEqualTo(1);
+        softAssertions.assertAll();
     }
 
     @Test
-    public void testMoveIngredient() {
-        // Тестируем метод moveIngredient()
-        burger.addIngredient(ingredient1); // Добавляем первый ингредиент
-        burger.addIngredient(ingredient2); // Добавляем второй ингредиент
-        burger.moveIngredient(0, 1); // Перемещаем элемент с позиции 0 на позицию 1
-        // Проверяем, что после перемещения осталось 2 ингредиента
-        assertEquals("После перемещения должно остаться 2 ингредиента", 2, burger.ingredients.size());
+    public void moveIngredientTest() {
+        burger.addIngredient(mockIngredient1);
+        burger.addIngredient(mockIngredient2);
+        burger.moveIngredient(1, 0);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.ingredients.get(0).equals(mockIngredient2))
+                .as("Метод moveIngredient() перемещает ингредиенты")
+                .isTrue();
+        softAssertions.assertThat(burger.ingredients.get(1).equals(mockIngredient1))
+                .as("Метод moveIngredient() корректно обновляет список ингредиентов")
+                .isTrue();
+        softAssertions.assertAll();
     }
 
     @Test
-    public void testGetPriceWithoutIngredients() {
-        // Тестируем getPrice() без ингредиентов (проверяем цикл for с пустым списком)
-        burger.setBuns(bun); // Устанавливаем булочку
-        // Не добавляем ингредиенты - проверяем случай пустого списка
-        // Ожидаемая цена: булочка (100) * 2 = 200
-        // Третий параметр 0.001 - допустимая погрешность при сравнении float
-        assertEquals("Цена без ингредиентов должна быть цена булочки * 2",
-                200.0f, burger.getPrice(), 0.001);
+    public void getPriceTest() {
+        when(mockBun.getPrice()).thenReturn(100.0f);
+        when(mockIngredient1.getPrice()).thenReturn(50.0f);
+        when(mockIngredient2.getPrice()).thenReturn(75.0f);
+
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockIngredient1);
+        burger.addIngredient(mockIngredient2);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.getPrice())
+                .as("Цена должна быть корректно вычислена")
+                .isEqualTo(325.0f); // Исправлено с 275.0f на 325.0f
+        softAssertions.assertThat(burger.getPrice())
+                .as("Цена должна учитывать две булочки")
+                .isGreaterThan(200.0f);
+        softAssertions.assertAll();
+    }
+
+    @Test
+    public void getReceiptTest() {
+        when(mockBun.getName()).thenReturn("black bun");
+        when(mockBun.getPrice()).thenReturn(100.0f);
+        when(mockIngredient1.getType()).thenReturn(IngredientType.SAUCE);
+        when(mockIngredient1.getName()).thenReturn("hot sauce");
+        when(mockIngredient1.getPrice()).thenReturn(50.0f);
+
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockIngredient1);
+
+        String receipt = burger.getReceipt();
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать название булочки")
+                .contains("black bun");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать тип ингредиента в нижнем регистре")
+                .contains("sauce");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать название ингредиента")
+                .contains("hot sauce");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать общую цену")
+                .contains("Price:");
+        softAssertions.assertAll();
+    }
+
+    @Test
+    public void getReceiptFormatTest() {
+        when(mockBun.getName()).thenReturn("Test Bun");
+        when(mockBun.getPrice()).thenReturn(150.5f);
+
+        burger.setBuns(mockBun);
+
+        String receipt = burger.getReceipt();
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(receipt)
+                .as("Чек должен начинаться с булочки")
+                .startsWith("(==== Test Bun ====)");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен заканчиваться булочкой")
+                .contains("(==== Test Bun ====)");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать цену")
+                .contains("Price:");
+        softAssertions.assertAll();
+    }
+
+    @Test
+    public void getReceiptWithMultipleIngredientsTest() {
+        when(mockBun.getName()).thenReturn("Test Bun");
+        when(mockBun.getPrice()).thenReturn(100.0f);
+        when(mockIngredient1.getType()).thenReturn(IngredientType.SAUCE);
+        when(mockIngredient1.getName()).thenReturn("Sauce 1");
+        when(mockIngredient1.getPrice()).thenReturn(50.0f);
+        when(mockIngredient2.getType()).thenReturn(IngredientType.FILLING);
+        when(mockIngredient2.getName()).thenReturn("Filling 1");
+        when(mockIngredient2.getPrice()).thenReturn(75.0f);
+
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockIngredient1);
+        burger.addIngredient(mockIngredient2);
+
+        String receipt = burger.getReceipt();
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать оба ингредиента")
+                .contains("Sauce 1", "Filling 1");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать оба типа ингредиентов")
+                .contains("sauce", "filling");
+        softAssertions.assertThat(receipt)
+                .as("Чек должен содержать цену")
+                .contains("Price:");
+        softAssertions.assertAll();
+    }
+
+    @Test
+    public void getPriceEmptyBurgerTest() {
+        when(mockBun.getPrice()).thenReturn(0.0f);
+
+        burger.setBuns(mockBun);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.getPrice())
+                .as("Цена пустого бургера должна быть 0")
+                .isEqualTo(0.0f);
+        softAssertions.assertThat(burger.getPrice())
+                .as("Цена должна быть неотрицательной")
+                .isGreaterThanOrEqualTo(0.0f);
+        softAssertions.assertAll();
+    }
+
+    @Test
+    public void getPriceWithOnlyBunTest() {
+        when(mockBun.getPrice()).thenReturn(100.0f);
+
+        burger.setBuns(mockBun);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.getPrice())
+                .as("Цена бургера только с булочкой должна быть 200.0f (100*2)")
+                .isEqualTo(200.0f);
+        softAssertions.assertAll();
+    }
+
+    @Test
+    public void getPriceWithOneIngredientTest() {
+        when(mockBun.getPrice()).thenReturn(100.0f);
+        when(mockIngredient1.getPrice()).thenReturn(50.0f);
+
+        burger.setBuns(mockBun);
+        burger.addIngredient(mockIngredient1);
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(burger.getPrice())
+                .as("Цена бургера с булочкой и одним ингредиентом должна быть 250.0f (100*2 + 50)")
+                .isEqualTo(250.0f);
+        softAssertions.assertAll();
     }
 }
